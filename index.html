@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>CuruguatyYa - Delivery exclusivo de Curuguaty</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Splash / Loading -->
+  <div id="splash" class="splash">
+    <div class="splash-content">
+      <div class="logo-big">Curuguaty<span>Ya</span></div>
+      <p>Delivery exclusivo de Curuguaty</p>
+      <div class="loader"></div>
+    </div>
+  </div>
+
+  <!-- Auth Screen -->
+  <div id="auth-screen" class="screen hidden">
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="logo">Curuguaty<span>Ya</span></div>
+        <p>La app de delivery solo para Curuguaty</p>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="tab active" data-tab="login">Iniciar sesión</button>
+        <button class="tab" data-tab="register">Registrarse</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label>Email o teléfono</label>
+          <input type="text" id="login-email" placeholder="ejemplo@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="login-password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Entrar</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form hidden">
+        <div class="form-group">
+          <label>Nombre completo</label>
+          <input type="text" id="reg-name" placeholder="Tu nombre" required>
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" id="reg-email" placeholder="ejemplo@email.com" required>
+        </div>
+        <div class="form-group">
+          <label>Teléfono</label>
+          <input type="tel" id="reg-phone" placeholder="0981 123 456" required>
+        </div>
+        <div class="form-group">
+          <label>Contraseña</label>
+          <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+        </div>
+        <div class="form-group">
+          <label>¿Cómo querés usar la app?</label>
+          <select id="reg-role" required>
+            <option value="cliente">Cliente (pedir comida)</option>
+            <option value="restaurante">Restaurante / Local</option>
+            <option value="delivery">Repartidor / Delivery</option>
+          </select>
+        </div>
+        <div id="restaurant-extra" class="hidden">
+          <div class="form-group">
+            <label>Nombre del local</label>
+            <input type="text" id="reg-rest-name" placeholder="Ej: Asado's.com">
+          </div>
+          <div class="form-group">
+            <label>Dirección del local</label>
+            <input type="text" id="reg-rest-address" placeholder="Calle y número, Curuguaty">
+          </div>
+        </div>
+        <div id="delivery-extra" class="hidden">
+          <div class="form-group">
+            <label>Tipo de vehículo</label>
+            <select id="reg-vehicle">
+              <option value="moto">Moto</option>
+              <option value="bicicleta">Bicicleta</option>
+              <option value="auto">Auto</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Crear cuenta</button>
+      </form>
+
+      <div class="demo-accounts">
+        <p><strong>Cuentas de demo:</strong></p>
+        <button class="btn-demo" data-email="cliente@demo.com" data-pass="123456">Cliente demo</button>
+        <button class="btn-demo" data-email="rest@demo.com" data-pass="123456">Restaurante demo</button>
+        <button class="btn-demo" data-email="delivery@demo.com" data-pass="123456">Repartidor demo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App (Cliente) -->
+  <div id="app-cliente" class="screen hidden">
+    <header class="app-header">
+      <div class="header-top">
+        <div class="logo-small">Curuguaty<span>Ya</span></div>
+        <div class="header-actions">
+          <button id="btn-cart" class="icon-btn">
+            🛒 <span id="cart-count" class="badge hidden">0</span>
+          </button>
+          <button id="btn-profile" class="icon-btn">👤</button>
+        </div>
+      </div>
+      <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Buscar restaurantes o platos...">
+      </div>
+      <div class="location-bar">
+        📍 Entregar en: <strong>Curuguaty, Canindeyú</strong>
+      </div>
+      <div class="delivery-status-bar" id="delivery-status-bar">
+        <span class="online-dot"></span>
+        <span id="online-drivers-text">Cargando repartidores...</span>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <section class="categories">
+        <button class="cat active" data-cat="todos">Todos</button>
+        <button class="cat" data-cat="favoritos">❤️ Favoritos</button>
+        <button class="cat" data-cat="asado">Asados</button>
+        <button class="cat" data-cat="pizza">Pizzas</button>
+        <button class="cat" data-cat="hamburguesa">Hamburguesas</button>
+        <button class="cat" data-cat="empanada">Empanadas</button>
+        <button class="cat" data-cat="tipica">Típica</button>
+        <button class="cat" data-cat="rapida">Comida rápida</button>
+      </section>
+
+      <div class="filter-row">
+        <select id="filter-rating">
+          <option value="0">Cualquier rating</option>
+          <option value="4">★ 4.0 o más</option>
+          <option value="4.5">★ 4.5 o más</option>
+        </select>
+      </div>
+
+      <section id="restaurants-list" class="restaurants-grid">
+        <!-- Restaurants will be injected here -->
+      </section>
+    </main>
+
+    <nav class="bottom-nav">
+      <button class="nav-item active" data-view="home">
+        <span>🏠</span> Inicio
+      </button>
+      <button class="nav-item" data-view="orders">
+        <span>📋</span> Mis pedidos
+      </button>
+      <button class="nav-item" data-view="profile">
+        <span>👤</span> Perfil
+      </button>
+    </nav>
+  </div>
+
+  <!-- Restaurant Detail View -->
+  <div id="restaurant-detail" class="screen hidden">
+    <header class="detail-header">
+      <button id="btn-back-rest" class="back-btn">←</button>
+      <h2 id="rest-detail-name">Restaurante</h2>
+      <button id="btn-fav-detail" class="icon-btn fav-btn">♡</button>
+    </header>
+    <div class="rest-info-banner" id="rest-banner">
+      <!-- filled by JS -->
+    </div>
+    <div id="menu-categories" class="menu-cats"></div>
+    <div id="menu-items" class="menu-list"></div>
+
+    <!-- Reseñas del local -->
+    <section class="reviews-section">
+      <div class="reviews-header">
+        <h3>Reseñas de clientes</h3>
+        <span id="reviews-summary"></span>
+      </div>
+      <div id="reviews-list" class="reviews-list"></div>
+    </section>
+
+    <div id="cart-bar" class="cart-bar hidden">
+      <span id="cart-summary">0 productos</span>
+      <button id="btn-view-cart" class="btn btn-primary">Ver carrito</button>
+    </div>
+  </div>
+
+  <!-- Cart / Checkout -->
+  <div id="cart-screen" class="screen hidden">
+    <header class="detail-header">
+      <button id="btn-back-cart" class="back-btn">←</button>
+      <h2>Tu pedido</h2>
+    </header>
+    <div id="cart-items" class="cart-items"></div>
+    <div class="cart-totals">
+      <div class="total-row">
+        <span>Subtotal</span>
+        <span id="subtotal">Gs. 0</span>
+      </div>
+      <div class="total-row">
+        <span>Envío</span>
+        <span id="delivery-fee">Gs. 8.000</span>
+      </div>
+      <div class="total-row total">
+        <span>Total</span>
+        <span id="grand-total">Gs. 0</span>
+      </div>
+    </div>
+    <div class="checkout-form">
+      <div class="form-group">
+        <label>Dirección de entrega</label>
+        <input type="text" id="delivery-address" placeholder="Calle, número, barrio - Curuguaty" required>
+      </div>
+      <div class="form-group">
+        <label>Método de pago</label>
+        <select id="payment-method">
+          <option value="efectivo">Efectivo</option>
+          <option value="tarjeta">Tarjeta (simulado)</option>
+          <option value="transferencia">Transferencia</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Notas para el local / repartidor</label>
+        <textarea id="order-notes" rows="2" placeholder="Ej: sin cebolla, llamar al llegar..."></textarea>
+      </div>
+      <button id="btn-place-order" class="btn btn-primary btn-block">Confirmar pedido</button>
+    </div>
+  </div>
+
+  <!-- Cliente Orders -->
+  <div id="cliente-orders" class="screen hidden">
+    <header class="detail-header">
+      <button class="back-btn nav-home">←</button>
+      <h2>Mis pedidos</h2>
+    </header>
+    <div id="orders-list" class="orders-list"></div>
+  </div>
+
+  <!-- Cliente Profile -->
+  <div id="cliente-profile" class="screen hidden">
+    <header class="detail-header">
+      <button class="back-btn nav-home">←</button>
+      <h2>Mi perfil</h2>
+    </header>
+    <div class="profile-card" id="profile-info"></div>
+    <button id="btn-logout" class="btn btn-outline btn-block">Cerrar sesión</button>
+  </div>
+
+  <!-- ==================== RESTAURANTE DASHBOARD ==================== -->
+  <div id="app-restaurante" class="screen hidden">
+    <header class="app-header rest-header">
+      <div class="header-top">
+        <div>
+          <div class="logo-small">Curuguaty<span>Ya</span></div>
+          <small id="rest-name-header">Mi local</small>
+        </div>
+        <button id="btn-rest-logout" class="icon-btn">🚪</button>
+      </div>
+    </header>
+
+    <div class="rest-tabs">
+      <button class="rest-tab active" data-tab="orders">Pedidos</button>
+      <button class="rest-tab" data-tab="menu">Mi menú</button>
+      <button class="rest-tab" data-tab="stats">Estadísticas</button>
+    </div>
+
+    <main class="main-content">
+      <div id="rest-orders" class="rest-panel">
+        <div class="panel-header">
+          <h3>Pedidos entrantes</h3>
+          <span id="new-orders-count" class="badge">0</span>
+        </div>
+        <div id="rest-orders-list" class="orders-list"></div>
+      </div>
+
+      <div id="rest-menu" class="rest-panel hidden">
+        <div class="panel-header">
+          <h3>Gestionar menú</h3>
+          <button id="btn-add-item" class="btn btn-sm btn-primary">+ Agregar</button>
+        </div>
+        <div id="rest-menu-list" class="menu-manage-list"></div>
+      </div>
+
+      <div id="rest-stats" class="rest-panel hidden">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-value" id="stat-orders">0</div>
+            <div class="stat-label">Pedidos hoy</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-revenue">Gs. 0</div>
+            <div class="stat-label">Ingresos hoy</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value" id="stat-pending">0</div>
+            <div class="stat-label">Pendientes</div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- ==================== DELIVERY DASHBOARD ==================== -->
+  <div id="app-delivery" class="screen hidden">
+    <header class="app-header delivery-header">
+      <div class="header-top">
+        <div>
+          <div class="logo-small">Curuguaty<span>Ya</span></div>
+          <small>Modo Repartidor</small>
+        </div>
+        <div class="status-toggle">
+          <label class="switch">
+            <input type="checkbox" id="delivery-online">
+            <span class="slider"></span>
+          </label>
+          <span id="online-status">Offline</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="delivery-tabs">
+      <button class="del-tab active" data-tab="available">Disponibles</button>
+      <button class="del-tab" data-tab="active">Mis entregas</button>
+      <button class="del-tab" data-tab="history">Historial</button>
+    </div>
+
+    <main class="main-content">
+      <div id="del-available" class="del-panel">
+        <div id="available-orders" class="orders-list"></div>
+      </div>
+      <div id="del-active" class="del-panel hidden">
+        <div id="active-deliveries" class="orders-list"></div>
+      </div>
+      <div id="del-history" class="del-panel hidden">
+        <div id="delivery-history" class="orders-list"></div>
+      </div>
+    </main>
+
+    <button id="btn-del-logout" class="btn btn-outline btn-block logout-float">Cerrar sesión</button>
+  </div>
+
+  <!-- Toast notifications -->
+  <div id="toast" class="toast hidden"></div>
+
+  <!-- Modal for add menu item -->
+  <div id="modal-overlay" class="modal-overlay hidden">
+    <div class="modal">
+      <h3 id="modal-title">Agregar plato</h3>
+      <form id="menu-item-form">
+        <div class="form-group">
+          <label>Nombre</label>
+          <input type="text" id="item-name" required>
+        </div>
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea id="item-desc" rows="2"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Precio (Gs.)</label>
+          <input type="number" id="item-price" required min="1000">
+        </div>
+        <div class="form-group">
+          <label>Categoría</label>
+          <select id="item-category">
+            <option value="plato">Plato principal</option>
+            <option value="entrada">Entrada</option>
+            <option value="bebida">Bebida</option>
+            <option value="postre">Postre</option>
+            <option value="combo">Combo</option>
+          </select>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-outline" id="btn-cancel-modal">Cancelar</button>
+          <button type="submit" class="btn btn-primary">Guardar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal de Reseña -->
+  <div id="review-modal" class="modal-overlay hidden">
+    <div class="modal review-modal">
+      <h3>¿Cómo te fue con el pedido?</h3>
+      <p class="review-rest-name" id="review-rest-name"></p>
+      
+      <div class="rating-group">
+        <label>Calificación del local</label>
+        <div class="stars" id="stars-restaurant">
+          <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+        </div>
+      </div>
+
+      <div class="rating-group">
+        <label>Calificación del repartidor</label>
+        <div class="stars" id="stars-delivery">
+          <span data-val="1">★</span><span data-val="2">★</span><span data-val="3">★</span><span data-val="4">★</span><span data-val="5">★</span>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Tu comentario (podés putear si hace falta 😅)</label>
+        <textarea id="review-comment" rows="3" placeholder="Contá tu experiencia... lo bueno, lo malo, lo feo."></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-outline" id="btn-skip-review">Ahora no</button>
+        <button type="button" class="btn btn-primary" id="btn-submit-review">Enviar reseña</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
